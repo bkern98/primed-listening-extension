@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Primed Listening</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>Primed Listening</h1>
+
+  <section class="upload-section" id="dropZone">
+    <label for="srtFile">Drop an .srt file or click to browse</label>
+    <input type="file" id="srtFile" accept=".srt">
+    <div class="status-row">
+      <p class="status" id="cueStatus">No file loaded</p>
+      <button class="clear-btn" id="clearCues" style="display:none" title="Clear loaded subtitles">✕</button>
+    </div>
+  </section>
+
+  <section class="settings-section">
+    <div class="row">
+      <label>Active</label>
+      <label class="switch">
+        <input type="checkbox" id="activeToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="row">
+      <label>Pause mode</label>
+      <div class="segmented" id="modeToggle">
+        <button class="seg-btn active" data-mode="fixed">Fixed</button>
+        <button class="seg-btn" data-mode="dynamic">Dynamic</button>
+      </div>
+    </div>
+
+    <div id="fixedSettings">
+      <div class="row">
+        <label for="fixedMs">Pause duration (ms)</label>
+        <input type="number" id="fixedMs" min="200" max="10000" step="100" value="2000">
+      </div>
+    </div>
+
+    <div id="dynamicSettings" style="display:none">
+      <div class="row">
+        <label for="msPerWord">ms per word</label>
+        <div class="slider-row">
+          <input type="range" id="msPerWord" min="200" max="800" step="50" value="400">
+          <span id="msPerWordVal">400</span>
+        </div>
+      </div>
+      <div class="row">
+        <label for="minPause">Min pause (ms)</label>
+        <input type="number" id="minPause" min="200" max="5000" step="100" value="800">
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="preRollMs">Pre-roll (ms)</label>
+      <input type="number" id="preRollMs" min="0" max="2000" step="50" value="300">
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <label for="offsetSec">Subtitle offset (s)</label>
+      <div class="offset-row">
+        <button class="offset-btn" id="offsetDown">−</button>
+        <input type="number" id="offsetSec" min="-30" max="30" step="0.1" value="0">
+        <button class="offset-btn" id="offsetUp">+</button>
+      </div>
+    </div>
+    <p class="hint">Negative = subtitles are late. Positive = subtitles are early.</p>
+  </section>
+
+  <section class="info-section">
+    <p id="tabStatus" class="dimmed">Open YouTube or a local video file.</p>
+    <p class="dimmed file-note" id="fileNote" style="display:none">
+      For local files in Chrome, enable <em>Allow access to file URLs</em> in
+      <code>chrome://extensions</code> for this extension.
+    </p>
+  </section>
+
+  <script src="../utils/srt-parser.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
