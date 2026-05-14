@@ -9,10 +9,15 @@ const els = {
   modeToggle:   document.getElementById('modeToggle'),
   fixedSettings:   document.getElementById('fixedSettings'),
   dynamicSettings: document.getElementById('dynamicSettings'),
+  charSettings:    document.getElementById('charSettings'),
+  minPauseRow:  document.getElementById('minPauseRow'),
   fixedMs:      document.getElementById('fixedMs'),
   msPerWord:    document.getElementById('msPerWord'),
   msPerWordVal: document.getElementById('msPerWordVal'),
+  msPerChar:    document.getElementById('msPerChar'),
+  msPerCharVal: document.getElementById('msPerCharVal'),
   minPause:     document.getElementById('minPause'),
+  minChars:     document.getElementById('minChars'),
   preRollMs:    document.getElementById('preRollMs'),
   offsetSec:    document.getElementById('offsetSec'),
   offsetDown:   document.getElementById('offsetDown'),
@@ -26,8 +31,10 @@ let settings = {
   mode: 'fixed',
   fixedMs: 2000,
   msPerWord: 400,
-  minPause: 800,
-  preRollMs: 300,
+  msPerChar: 60,
+  minPause: 500,
+  minChars: 2,
+  preRollMs: 0,
   offsetSec: 0,
   active: false,
 };
@@ -37,21 +44,26 @@ function buildSettings() {
     mode:      settings.mode,
     fixedMs:   parseInt(els.fixedMs.value) || 2000,
     msPerWord: parseInt(els.msPerWord.value) || 400,
-    minPause:  parseInt(els.minPause.value) || 800,
-    preRollMs: parseInt(els.preRollMs.value) || 300,
+    msPerChar: parseInt(els.msPerChar.value) || 60,
+    minPause:  parseInt(els.minPause.value) || 500,
+    minChars:  parseInt(els.minChars.value) || 0,
+    preRollMs: parseInt(els.preRollMs.value) || 0,
     offsetSec: parseFloat(els.offsetSec.value) || 0,
     active:    els.activeToggle.checked,
   };
 }
 
 function applySettingsToUI(s) {
-  els.activeToggle.checked    = s.active;
-  els.fixedMs.value           = s.fixedMs;
-  els.msPerWord.value         = s.msPerWord;
+  els.activeToggle.checked     = s.active;
+  els.fixedMs.value            = s.fixedMs;
+  els.msPerWord.value          = s.msPerWord;
   els.msPerWordVal.textContent = s.msPerWord;
-  els.minPause.value          = s.minPause;
-  els.preRollMs.value         = s.preRollMs;
-  els.offsetSec.value         = s.offsetSec ?? 0;
+  els.msPerChar.value          = s.msPerChar ?? 60;
+  els.msPerCharVal.textContent = s.msPerChar ?? 60;
+  els.minPause.value           = s.minPause;
+  els.minChars.value           = s.minChars ?? 2;
+  els.preRollMs.value          = s.preRollMs;
+  els.offsetSec.value          = s.offsetSec ?? 0;
   setMode(s.mode, false);
 }
 
@@ -62,6 +74,8 @@ function setMode(mode, save = true) {
   });
   els.fixedSettings.style.display   = mode === 'fixed'   ? '' : 'none';
   els.dynamicSettings.style.display = mode === 'dynamic' ? '' : 'none';
+  els.charSettings.style.display    = mode === 'char'    ? '' : 'none';
+  els.minPauseRow.style.display     = mode === 'fixed'   ? 'none' : '';
   if (save) saveAndSync();
 }
 
@@ -174,11 +188,16 @@ els.modeToggle.addEventListener('click', e => {
 els.activeToggle.addEventListener('change', saveAndSync);
 els.fixedMs.addEventListener('change', saveAndSync);
 els.minPause.addEventListener('change', saveAndSync);
+els.minChars.addEventListener('change', saveAndSync);
 els.preRollMs.addEventListener('change', saveAndSync);
 els.offsetSec.addEventListener('change', saveAndSync);
 els.offsetDown.addEventListener('click', () => stepOffset(-0.1));
 els.offsetUp.addEventListener('click',   () => stepOffset(+0.1));
 els.msPerWord.addEventListener('input', () => {
   els.msPerWordVal.textContent = els.msPerWord.value;
+  saveAndSync();
+});
+els.msPerChar.addEventListener('input', () => {
+  els.msPerCharVal.textContent = els.msPerChar.value;
   saveAndSync();
 });

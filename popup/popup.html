@@ -30,7 +30,8 @@
       <label>Pause mode</label>
       <div class="segmented" id="modeToggle">
         <button class="seg-btn active" data-mode="fixed">Fixed</button>
-        <button class="seg-btn" data-mode="dynamic">Dynamic</button>
+        <button class="seg-btn" data-mode="dynamic">Word</button>
+        <button class="seg-btn" data-mode="char">Char</button>
       </div>
     </div>
 
@@ -49,15 +50,31 @@
           <span id="msPerWordVal">400</span>
         </div>
       </div>
+    </div>
+
+    <div id="charSettings" style="display:none">
       <div class="row">
-        <label for="minPause">Min pause (ms)</label>
-        <input type="number" id="minPause" min="200" max="5000" step="100" value="800">
+        <label for="msPerChar">ms per char</label>
+        <div class="slider-row">
+          <input type="range" id="msPerChar" min="20" max="200" step="10" value="60">
+          <span id="msPerCharVal">60</span>
+        </div>
       </div>
+    </div>
+
+    <div class="row" id="minPauseRow" style="display:none">
+      <label for="minPause">Min pause (ms)</label>
+      <input type="number" id="minPause" min="200" max="5000" step="100" value="500">
+    </div>
+
+    <div class="row">
+      <label for="minChars">Min chars (skip)</label>
+      <input type="number" id="minChars" min="0" max="20" step="1" value="2">
     </div>
 
     <div class="row">
       <label for="preRollMs">Pre-roll (ms)</label>
-      <input type="number" id="preRollMs" min="0" max="2000" step="50" value="300">
+      <input type="number" id="preRollMs" min="0" max="2000" step="50" value="0">
     </div>
 
     <div class="divider"></div>

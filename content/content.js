@@ -1,7 +1,17 @@
 const api = typeof browser !== 'undefined' ? browser : chrome;
 
 let cues = [];
-let settings = { mode: 'fixed', fixedMs: 2000, msPerWord: 400, minPause: 800, preRollMs: 300, offsetSec: 0, active: false };
+let settings = {
+  mode: 'fixed',
+  fixedMs: 2000,
+  msPerWord: 400,
+  msPerChar: 60,
+  minPause: 500,
+  minChars: 2,
+  preRollMs: 0,
+  offsetSec: 0,
+  active: false,
+};
 let video = null;
 let cueIndex = 0;
 let state = 'IDLE'; // IDLE | PAUSED
@@ -103,8 +113,21 @@ function findCueIndexForTime(t) {
 
 // — Timing loop —
 
+function visibleCharCount(text) {
+  if (!text) return 0;
+  const stripped = text
+    .replace(/\(.*?\)/g, '')
+    .replace(/（[^）]*）/g, '')
+    .replace(/\s+/g, '');
+  return [...stripped].length;
+}
+
 function pauseDurationFor(cue) {
   if (settings.mode === 'fixed') return settings.fixedMs;
+  if (settings.mode === 'char') {
+    const chars = visibleCharCount(cue.text);
+    return Math.max(settings.minPause, chars * (settings.msPerChar || 60));
+  }
   const words = cue.text.trim().split(/\s+/).length;
   return Math.max(settings.minPause, words * settings.msPerWord);
 }
@@ -115,10 +138,14 @@ function tick() {
   if (video.paused && state === 'IDLE') return; // user manually paused
 
   const cue = cues[cueIndex];
-  const preRoll = (settings.preRollMs || 300) / 1000;
+  const preRoll = (settings.preRollMs ?? 0) / 1000;
   const triggerAt = cue.start + (settings.offsetSec || 0) - preRoll;
 
   if (video.currentTime >= triggerAt) {
+    if (visibleCharCount(cue.text) < (settings.minChars || 0)) {
+      cueIndex++;
+      return;
+    }
     state = 'PAUSED';
     video.pause();
     showSubtitle(cue.text);
@@ -168,7 +195,7 @@ api.storage.local.get(['cues', 'settings'], result => {
     cueIndex = 0;
   }
   if (result.settings) {
-    settings = result.settings;
+    settings = { ...settings, ...result.settings };
     if (settings.active) startLoop();
   }
 });
