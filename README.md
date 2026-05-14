@@ -53,7 +53,3 @@ popup/               — extension popup UI
 utils/srt-parser.js  — minimal SRT parser
 manifest.json        — MV3 manifest
 ```
-
-## License
-
-MIT.
